@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* HomeScout luxury dark palette */
+  --color-hs-bg: #0f0f0f;
+  --color-hs-surface: #1a1a1a;
+  --color-hs-gold: #c9a84c;
+  --color-hs-gold-light: #e8d5a3;
+  --color-hs-white: #ffffff;
+  --color-hs-muted: #a0a0a0;
+  --color-hs-border: #2a2a2a;
+  --color-hs-score-strong: #c9a84c;
+  --color-hs-score-good: #d97706;
+  --color-hs-score-partial: #c2410c;
+  --color-hs-score-weak: #991b1b;
+
+  /* Fonts */
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+}
+
+body {
+  background-color: #0f0f0f;
+  color: #ffffff;
+}
