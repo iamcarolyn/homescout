@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import { Download } from "lucide-react";
 
@@ -51,22 +52,36 @@ const SCORE_LABELS = [
 ];
 
 export default function ScoreCard({ data, location }: ScoreCardProps) {
-  function handleDownload() {
-    const raw = data.raw || JSON.stringify(data, null, 2);
-    const blob = new Blob(
-      [`# HomeScout Scorecard — ${location}\n\n${raw}`],
-      { type: "text/markdown" }
-    );
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `homescout-${location.toLowerCase().replace(/\s+/g, "-")}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  async function handleDownload() {
+    if (!cardRef.current) return;
+    const html2pdf = (await import("html2pdf.js")).default;
+    const element = cardRef.current.cloneNode(true) as HTMLElement;
+
+    // Force dark text on white for PDF — doesn't affect on-screen display
+    element.style.backgroundColor = "#ffffff";
+    element.style.color = "#0f0f0f";
+    element.querySelectorAll("*").forEach((el) => {
+      (el as HTMLElement).style.color = "#0f0f0f";
+      (el as HTMLElement).style.backgroundColor = "transparent";
+      (el as HTMLElement).style.borderColor = "#cccccc";
+    });
+
+    const slug = location.toLowerCase().replace(/\s+/g, "-");
+
+    html2pdf().set({
+      margin: 12,
+      filename: `homescout-${slug}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    }).from(element).save();
   }
 
   return (
     <motion.div
+      ref={cardRef}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
